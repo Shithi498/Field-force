@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+
 import 'package:flutter_map/flutter_map.dart' as ll;
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:flutter_map/flutter_map.dart';
@@ -9,6 +10,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 import '../model/journey_model.dart';
 import '../provider/journey_provider.dart';
+import 'background_location_task.dart';
 import 'journey_map_screen.dart';
 
 
@@ -45,26 +47,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
   @override
   void initState() {
     super.initState();
-    FlutterBackgroundService().on('update').listen((event) {
-      if (event == null) return;
 
-      final lat = event['latitude'];
-      final lng = event['longitude'];
-      final address = event['address'];
-
-      // Add auto event to your provider
-      final point = ll.LatLng(lat, lng);
-      context.read<JourneyProvider>().addCheckEvent(
-        type: 'AUTO',
-        location: point,
-        address: address,
-        isAuto: true,
-      );
-
-      setState(() {
-        _locationStatus = 'Auto updated in background: $address';
-      });
-    });
     _checkLocationAndPermission();
     _listenLiveLocation();
   }
@@ -137,11 +120,11 @@ class _JourneyScreenState extends State<JourneyScreen> {
 
     if (isCheckedIn) {
       _setStartFromDevice();
-      FlutterBackgroundService().startService();
+
       print("Checked in");
     } else {
       _onEndJourney();
-      FlutterBackgroundService().invoke('stopService');
+
 
     }
   }
@@ -330,6 +313,11 @@ class _JourneyScreenState extends State<JourneyScreen> {
       startAddress: address,
     );
     _startAutoLocationUpdates();
+    await FlutterForegroundTask.startService(
+      notificationTitle: 'Journey in progress',
+      notificationText: 'Location updates every 15 minutes',
+      callback: startCallback,
+    );
 
     debugPrint('START set at: $point ($address)');
   }
@@ -357,6 +345,8 @@ class _JourneyScreenState extends State<JourneyScreen> {
 
   void _onEndJourney() async {
     _stopAutoLocationUpdates();
+    await FlutterForegroundTask.stopService();
+
     final journeyProvider = context.read<JourneyProvider>();
 
     if (_startLocation == null || _startAddress == null) {

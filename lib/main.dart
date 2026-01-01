@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
-
 import 'package:field_force_2/provider/chat_provider.dart';
 import 'package:field_force_2/provider/journey_provider.dart';
 import 'package:field_force_2/provider/leave_provider.dart';
@@ -27,7 +24,7 @@ import 'package:field_force_2/repo/all_employee_repository.dart';
 import 'package:field_force_2/repo/attendance_repository.dart';
 import 'package:field_force_2/repo/customer_repository.dart';
 import 'package:field_force_2/repo/product_repository.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
@@ -35,14 +32,33 @@ import 'package:provider/provider.dart';
 
 
 
-
-
-
-
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterForegroundTask.init(
+    androidNotificationOptions: AndroidNotificationOptions(
+      channelId: 'location_channel',
+      channelName: 'Location Tracking',
+      channelDescription: 'Tracking location in background',
+      channelImportance: NotificationChannelImportance.LOW,
+      priority: NotificationPriority.LOW,
+      iconData: const NotificationIconData(
+        resType: ResourceType.mipmap,
+        resPrefix: ResourcePrefix.ic,
+        name: 'launcher',
+      ),
+    ),
 
+    iosNotificationOptions: const IOSNotificationOptions(
+      showNotification: true,
+      playSound: false,
+    ),
+
+    foregroundTaskOptions: const ForegroundTaskOptions(
+      interval: 900000, // 15 minutes
+      autoRunOnBoot: false,
+      allowWakeLock: true,
+    ),
+  );
 
 
   runApp(
@@ -157,7 +173,9 @@ Future<void> main() async {
         ],
         child: const MyApp(), )
      );
+
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
