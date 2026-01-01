@@ -1,0 +1,250 @@
+
+// import 'package:flutter/material.dart';
+// import '../model/product_model.dart';
+//
+// class ProductDetailsPage extends StatefulWidget {
+//   const ProductDetailsPage({super.key, required this.product});
+//   final Product product;
+//
+//   @override
+//   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
+// }
+//
+// class _ProductDetailsPageState extends State<ProductDetailsPage> {
+//   String get _typeLabel {
+//     switch (widget.product.type.toLowerCase()) {
+//       case 'consu':
+//       case 'consumable':
+//         return 'Consumable';
+//       case 'product':
+//       case 'storable':
+//         return 'Storable Product';
+//       case 'service':
+//         return 'Service';
+//       default:
+//         return widget.product.type.isEmpty ? '—' : widget.product.type;
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final p = widget.product;
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Product Details'),
+//         centerTitle: true,
+//       ),
+//       body: SingleChildScrollView(
+//         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+// Center(
+//              child:   Text(
+//                   p.name,
+//                   maxLines: 2,
+//                   overflow: TextOverflow.ellipsis,
+//                   style: const TextStyle(
+//                     fontSize: 22,
+//                     fontWeight: FontWeight.w700,
+//                   ),
+//                 ),
+//
+// ),
+//                 const SizedBox(height: 22), // Spacing between name and thumbnail
+//                 Center(
+//                   child:  ClipRRect(
+//                     borderRadius: BorderRadius.circular(6),
+//                     child: Container(
+//                       width: 256,
+//                       height: 156,
+//                       color: Colors.grey.shade200,
+//                       child: Image.network(
+//                         'https://images.unsplash.com/photo-1549187774-b4e9b0445b41?q=80&w=400&auto=format&fit:cover',
+//                       ),
+//                     ),
+//                   ),
+//                 )
+//
+//               ],
+//             ),
+//
+//             const SizedBox(height: 18),
+//
+//             // ===== General Information (card-like details) =====
+//             _SectionCard(
+//               title: 'General Information',
+//               children: [
+//                 _InfoRow(
+//                   icon: Icons.inventory_2_outlined,
+//                   label: 'Product Type',
+//                   value: _typeLabel,
+//                 ),
+//                 _InfoRow(
+//                   icon: Icons.straighten,
+//                   label: 'Unit of Measure',
+//                   value: p.uomName.isEmpty ? '—' : p.uomName,
+//                 ),
+//                 _InfoRow(
+//                   icon: Icons.attach_money,
+//                   label: 'Sales Price',
+//                   value: '\$${p.listPrice.toStringAsFixed(2)}',
+//                 ),
+//                 _InfoRow(
+//                   icon: Icons.tag_outlined,
+//                   label: 'Internal Reference',
+//                   value: '—',
+//                 ),
+//                 _InfoRow(
+//                   icon: Icons.description_outlined,
+//                   label: 'Description',
+//                   value:
+//                   'Admin-facing description of ${p.name}. Adjust fields above to match your catalog.',
+//                   multiline: true,
+//                 ),
+//               ],
+//               footerNote: _typeLabel == 'Consumable'
+//                   ? "Consumables are physical products for which you don't manage stock."
+//                   : _typeLabel == 'Storable Product'
+//                   ? "Storable products are managed in stock with quantities on hand."
+//                   : "Services are non-material products; no stock is managed.",
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+//
+// class _SectionCard extends StatelessWidget {
+//   const _SectionCard({
+//     required this.title,
+//     required this.children,
+//     this.footerNote,
+//   });
+//
+//   final String title;
+//   final List<Widget> children;
+//   final String? footerNote;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final bg = Theme.of(context).colorScheme.surface.withOpacity(0.5);
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: bg,
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           // Header
+//           Text(
+//             title,
+//             style: TextStyle(
+//               fontSize: 20,
+//               fontWeight: FontWeight.w800,
+//               color: Colors.black.withOpacity(.85),
+//               letterSpacing: .2,
+//             ),
+//           ),
+//           const SizedBox(height: 6),
+//           Divider(
+//             height: 1,
+//             thickness: 1,
+//             color: Colors.black.withOpacity(.08),
+//           ),
+//           const SizedBox(height: 8),
+//
+//           // Rows
+//           ..._withDividers(children),
+//
+//           if (footerNote != null) ...[
+//             const SizedBox(height: 10),
+//             Text(
+//               footerNote!,
+//               style: TextStyle(
+//                 fontSize: 12,
+//                 color: Colors.black.withOpacity(.6),
+//               ),
+//             ),
+//           ],
+//         ],
+//       ),
+//     );
+//   }
+//
+//   // Insert light spacing between rows (not full dividers, to keep it airy).
+//   List<Widget> _withDividers(List<Widget> items) {
+//     final out = <Widget>[];
+//     for (var i = 0; i < items.length; i++) {
+//       out.add(items[i]);
+//       if (i != items.length - 1) out.add(const SizedBox(height: 8));
+//     }
+//     return out;
+//   }
+// }
+//
+//
+// class _InfoRow extends StatelessWidget {
+//   const _InfoRow({
+//     required this.icon,
+//     required this.label,
+//     required this.value,
+//     this.multiline = false,
+//   });
+//
+//   final IconData icon;
+//   final String label;
+//   final String value;
+//   final bool multiline;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final labelStyle = TextStyle(
+//       color: Colors.black.withOpacity(.6),
+//       fontSize: 13,
+//       fontWeight: FontWeight.w600,
+//     );
+//     final valueStyle = const TextStyle(
+//       color: Colors.black87,
+//       fontSize: 13.5,
+//       fontWeight: FontWeight.w700,
+//     );
+//
+//     return Row(
+//       crossAxisAlignment: multiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.only(top: 2),
+//           child: Icon(icon, size: 18, color: Colors.black54),
+//         ),
+//         const SizedBox(width: 10),
+//         // Label
+//         SizedBox(
+//           width: 130, // fixed-ish label column like the screenshot
+//           child: Text(label, style: labelStyle),
+//         ),
+//         // Value
+//         Expanded(
+//           child: Text(
+//             value,
+//             style: valueStyle,
+//             textAlign: TextAlign.left,
+//             maxLines: multiline ? null : 1,
+//             overflow: multiline ? TextOverflow.visible : TextOverflow.ellipsis,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+

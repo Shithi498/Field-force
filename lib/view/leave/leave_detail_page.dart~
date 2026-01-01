@@ -1,0 +1,499 @@
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+// import '../model/leave_model.dart';
+//
+// class LeaveDetailsPage extends StatelessWidget {
+//   final Leave leave;
+//
+//   const LeaveDetailsPage({super.key, required this.leave});
+//
+//   String _formatDate(String isoLike) {
+//     if (isoLike.isEmpty) return 'N/A';
+//     try {
+//       final dt = DateTime.tryParse(isoLike);
+//       if (dt == null) return isoLike;
+//       return DateFormat('EEE, d MMM yyyy').format(dt);
+//     } catch (_) {
+//       return isoLike;
+//     }
+//   }
+//
+//   Color _statusColor(String state) {
+//     switch (state.toLowerCase()) {
+//       case 'draft':
+//       case 'to_approve':
+//         return Colors.amber.shade700;
+//       case 'confirm':
+//       case 'approved':
+//         return Colors.green.shade700;
+//       case 'refuse':
+//       case 'rejected':
+//         return Colors.red.shade700;
+//       case 'cancel':
+//       case 'canceled':
+//         return Colors.grey.shade700;
+//       default:
+//         return Colors.blueGrey.shade700;
+//     }
+//   }
+//
+//   Color _statusBg(String state) => _statusColor(state).withOpacity(0.12);
+//
+//   Widget _badge(String label, String state) {
+//     final fg = _statusColor(state);
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+//       decoration: BoxDecoration(
+//         color: _statusBg(state),
+//         borderRadius: BorderRadius.circular(20),
+//         border: Border.all(color: fg.withOpacity(0.35)),
+//       ),
+//       child: Text(
+//         label,
+//         style: TextStyle(
+//           color: fg,
+//           fontWeight: FontWeight.w700,
+//           fontSize: 12,
+//           letterSpacing: 0.2,
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _infoRow(IconData icon, String label, String value) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 10),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Icon(icon, size: 20, color: Colors.grey.shade600),
+//           const SizedBox(width: 12),
+//           SizedBox(
+//             width: 130,
+//             child: Text(
+//               label,
+//               style: const TextStyle(color: Colors.black54, fontSize: 15),
+//             ),
+//           ),
+//           const SizedBox(width: 8),
+//           Expanded(
+//             child: Text(
+//               value.isNotEmpty ? value : 'N/A',
+//               overflow: TextOverflow.ellipsis,
+//               style: const TextStyle(
+//                 color: Colors.black,
+//                 fontSize: 15,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final from = _formatDate(leave.requestDateFrom);
+//     final to   = _formatDate(leave.requestDateTo);
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Leave Details'),
+//         centerTitle: true,
+//       ),
+//       body: SingleChildScrollView(
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           crossAxisAlignment: CrossAxisAlignment.stretch,
+//           children: [
+//             // Header
+//             Container(
+//               padding: const EdgeInsets.all(16),
+//               decoration: BoxDecoration(
+//                 color: Colors.grey.shade50,
+//                 border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+//               ),
+//               child: Row(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   CircleAvatar(
+//                     radius: 32,
+//                     backgroundColor: Colors.blueGrey.shade100,
+//                     child: Text(
+//                       _initials(leave.employeeName),
+//                       style: const TextStyle(
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 18,
+//                         color: Colors.black87,
+//                       ),
+//                     ),
+//                   ),
+//                   const SizedBox(width: 12),
+//                   Expanded(
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         const SizedBox(height: 4),
+//                         Text(
+//                           leave.employeeName,
+//                           maxLines: 2,
+//                           overflow: TextOverflow.ellipsis,
+//                           style: const TextStyle(
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         const SizedBox(height: 6),
+//                         Row(
+//                           children: [
+//                             _badge(
+//                               leave.state.isEmpty ? 'Unknown' : _title(leave.state),
+//                               leave.state,
+//                             ),
+//                             const SizedBox(width: 8),
+//                             Flexible(
+//                               child: Text(
+//                                 leave.company.isNotEmpty ? leave.company : '—',
+//                                 overflow: TextOverflow.ellipsis,
+//                                 style: TextStyle(
+//                                   color: Colors.grey.shade700,
+//                                   fontSize: 14,
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//
+//             // Details
+//             const Padding(
+//               padding: EdgeInsets.fromLTRB(16, 16, 16, 6),
+//               child: Text(
+//                 'Leave Information',
+//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//               ),
+//             ),
+//             const Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 16),
+//               child: Divider(),
+//             ),
+//             Padding(
+//               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   _infoRow(Icons.card_travel, 'Leave Type', leave.holidayStatus),
+//                   _infoRow(Icons.today, 'From', from),
+//                   _infoRow(Icons.event, 'To', to),
+//                   _infoRow(Icons.av_timer, 'Number of Days', _daysStr(leave.numberOfDays)),
+//                   _infoRow(Icons.badge, 'Employee ID', leave.employeeId.toString()),
+//                   _infoRow(Icons.apartment, 'Company', leave.company),
+//                   _infoRow(Icons.info_outline, 'State', _title(leave.state)),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   static String _title(String s) =>
+//       s.isEmpty ? '' : s.replaceAll('_', ' ').replaceAll('-', ' ')
+//           .split(' ')
+//           .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+//           .join(' ');
+//
+//   static String _daysStr(double d) {
+//     final isInt = d == d.roundToDouble();
+//     return isInt ? '${d.toInt()} day${d == 1 ? '' : 's'}'
+//         : '${d.toStringAsFixed(d < 10 ? 1 : 2)} days';
+//   }
+//
+//   static String _initials(String name) {
+//     final parts = name.trim().split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+//     if (parts.isEmpty) return '?';
+//     final first = parts[0][0];
+//     final second = parts.length > 1 ? parts[1][0] : '';
+//     return (first + second).toUpperCase();
+//   }
+// }
+
+
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../model/leave_model.dart';
+
+class LeaveDetailsPage extends StatelessWidget {
+  final Leave leave;
+
+  const LeaveDetailsPage({super.key, required this.leave});
+
+  // --- DATE FORMATTER ---
+  String _formatDate(String isoLike) {
+    if (isoLike.isEmpty) return 'N/A';
+    try {
+      final dt = DateTime.tryParse(isoLike);
+      if (dt == null) return isoLike;
+      return DateFormat('EEE, d MMM yyyy').format(dt);
+    } catch (_) {
+      return isoLike;
+    }
+  }
+
+  // --- STATUS COLORS ---
+  Color _statusColor(String state) {
+    switch (state.toLowerCase()) {
+      case 'draft':
+      case 'to_approve':
+        return Colors.amber.shade700;
+      case 'confirm':
+      case 'approved':
+        return Colors.green.shade700;
+      case 'refuse':
+      case 'rejected':
+        return Colors.red.shade700;
+      case 'cancel':
+      case 'canceled':
+        return Colors.grey.shade700;
+      default:
+        return Colors.blueGrey.shade700;
+    }
+  }
+
+  Color _statusBg(String s) => _statusColor(s).withOpacity(0.12);
+
+  // --- RESPONSIVE BADGE ---
+  Widget _badge(BuildContext context, String label, String state) {
+    final w = MediaQuery.of(context).size.width;
+    final padH = (w * 0.025).clamp(6.0, 14.0);
+    final padV = (w * 0.013).clamp(3.5, 7.0);
+    final fontSize = (w * 0.03).clamp(11.0, 14.0);
+
+    final fg = _statusColor(state);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: padH, vertical: padV),
+      decoration: BoxDecoration(
+        color: _statusBg(state),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: fg.withOpacity(0.35)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: fg,
+          fontSize: fontSize,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  // --- RESPONSIVE INFO ROW ---
+  Widget _infoRow(BuildContext context, IconData icon, String label, String value) {
+    final w = MediaQuery.of(context).size.width;
+
+    final iconSize = (w * 0.05).clamp(16.0, 22.0);
+    final labelWidth = (w * 0.32).clamp(100.0, 150.0);
+    final fontLabel = (w * 0.038).clamp(13.0, 16.0);
+    final fontValue = (w * 0.04).clamp(14.0, 17.0);
+    final gap = (w * 0.03).clamp(6.0, 14.0);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: (w * 0.025).clamp(6.0, 14.0)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: iconSize, color: Colors.grey.shade600),
+          SizedBox(width: gap),
+          SizedBox(
+            width: labelWidth,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: fontLabel,
+              ),
+            ),
+          ),
+          SizedBox(width: gap * 0.6),
+          Expanded(
+            child: Text(
+              value.isNotEmpty ? value : 'N/A',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: fontValue,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+
+    // Responsive metrics
+    final avatarRadius = (w * 0.12).clamp(28.0, 42.0);
+    final avatarFont   = (w * 0.045).clamp(14.0, 18.0);
+    final headerPad    = (w * 0.04).clamp(14.0, 22.0);
+    final sectionTitle = (w * 0.048).clamp(16.0, 20.0);
+    final employeeNameSize = (w * 0.05).clamp(16.0, 22.0);
+
+    final from = _formatDate(leave.requestDateFrom);
+    final to   = _formatDate(leave.requestDateTo);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Leave Details'),
+        centerTitle: true,
+      ),
+
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+
+            // HEADER (Responsive)
+            Container(
+              padding: EdgeInsets.all(headerPad),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: avatarRadius,
+                    backgroundColor: Colors.blueGrey.shade100,
+                    child: Text(
+                      _initials(leave.employeeName),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: avatarFont,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: (w * 0.035).clamp(8.0, 16.0)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: (w * 0.01).clamp(2.0, 6.0)),
+                        Text(
+                          leave.employeeName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: employeeNameSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: (w * 0.015).clamp(4.0, 10.0)),
+                        Row(
+                          children: [
+                            _badge(
+                              context,
+                              leave.state.isEmpty ? 'Unknown' : _title(leave.state),
+                              leave.state,
+                            ),
+                            SizedBox(width: (w * 0.02).clamp(6.0, 14.0)),
+                            Flexible(
+                              child: Text(
+                                leave.company.isNotEmpty ? leave.company : '—',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: (w * 0.038).clamp(13.0, 16.0),
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // SECTION TITLE
+            Padding(
+              padding: EdgeInsets.fromLTRB(headerPad, headerPad, headerPad, headerPad / 2),
+              child: Text(
+                'Leave Information',
+                style: TextStyle(
+                  fontSize: sectionTitle,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: headerPad),
+              child: const Divider(),
+            ),
+
+            // DETAIL LIST
+            Padding(
+              padding: EdgeInsets.fromLTRB(headerPad, 8, headerPad, headerPad * 1.3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _infoRow(context, Icons.card_travel, 'Leave Type', leave.holidayStatus),
+                  _infoRow(context, Icons.today, 'From', from),
+                  _infoRow(context, Icons.event, 'To', to),
+                  _infoRow(context, Icons.av_timer, 'Number of Days', _daysStr(leave.numberOfDays)),
+                  _infoRow(context, Icons.badge, 'Employee ID', leave.employeeId.toString()),
+                  _infoRow(context, Icons.apartment, 'Company', leave.company),
+                  _infoRow(context, Icons.info_outline, 'State', _title(leave.state)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- HELPERS ---
+  static String _title(String s) {
+    return s.isEmpty
+        ? ''
+        : s.replaceAll('_', ' ').replaceAll('-', ' ')
+        .split(' ')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
+  }
+
+  static String _daysStr(double d) {
+    final isInt = d == d.roundToDouble();
+    return isInt
+        ? '${d.toInt()} day${d == 1 ? '' : 's'}'
+        : '${d.toStringAsFixed(d < 10 ? 1 : 2)} days';
+  }
+
+  static String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
+    final first = parts[0][0];
+    final second = parts.length > 1 ? parts[1][0] : '';
+    return (first + second).toUpperCase();
+  }
+}
+

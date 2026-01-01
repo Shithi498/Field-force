@@ -1,0 +1,51 @@
+class AllEmployeeResponse {
+  final List<Employee> employees;
+
+  AllEmployeeResponse({required this.employees});
+
+  factory AllEmployeeResponse.fromJson(Map<String, dynamic> json) {
+    final result = json['result'] ?? {};
+    final list = (result['employees'] as List? ?? [])
+        .map((e) => Employee.fromJson(e))
+        .toList();
+    return AllEmployeeResponse(employees: list);
+  }
+}
+
+class Employee {
+  final int id;
+  final String name;
+  final String jobTitle;
+  final String workEmail;
+  final String workPhone;
+  final String department;
+  final String manager;
+  final String company;
+  final String imageUrl;
+
+  Employee({
+    required this.id,
+    required this.name,
+    required this.jobTitle,
+    required this.workEmail,
+    required this.workPhone,
+    required this.department,
+    required this.manager,
+    required this.company,
+    required this.imageUrl,
+  });
+
+  factory Employee.fromJson(Map<String, dynamic> json) {
+    return Employee(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      jobTitle: json['job_title'] ?? '',
+      workEmail: json['work_email'] ?? '',
+      workPhone: json['work_phone'] ?? '',
+      department: json['department'] ?? '',
+      manager: json['manager'] ?? '',
+      company: json['company'] ?? '',
+      imageUrl: json['image_1920'] ?? '',
+    );
+  }
+}
