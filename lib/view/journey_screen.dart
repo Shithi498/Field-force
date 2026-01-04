@@ -76,7 +76,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
           _locationStatus = "Location updated at ${now.hour}:${now.minute}";
         });
 
-        // ✅ Do your main work here
+
         // saveLocation(point);
         // sendToServer(point);
         // updateMap(point);
@@ -167,9 +167,6 @@ class _JourneyScreenState extends State<JourneyScreen> {
   }
 
 
-  void _handleMapTap(ll.TapPosition _, ll.LatLng tappedPoint) {
-    // Intentionally empty – we don't want to change start/end by tap.
-  }
 
   List<Marker> _buildMapMarkers(Journey? journey) {
     final markers = <Marker>[];
@@ -743,14 +740,14 @@ SizedBox(height: 20,),
               color: typeColor.withOpacity(0.15),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text(
-              typeLabel,
-              style: TextStyle(
-                color: typeColor,
-                fontWeight: FontWeight.bold,
-                fontSize: chipFontSize,
-              ),
-            ),
+            // child: Text(
+            //   typeLabel,
+            //   style: TextStyle(
+            //     color: typeColor,
+            //     fontWeight: FontWeight.bold,
+            //     fontSize: chipFontSize,
+            //   ),
+            // ),
           ),
           const SizedBox(width: 8),
           Expanded(

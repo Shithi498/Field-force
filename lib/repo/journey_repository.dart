@@ -13,10 +13,10 @@ class JourneyRepository {
     http.Client? client,
   }) : _client = client ?? http.Client();
 
-  /// Save a journey to backend (create or update).
+
   Future<Journey> saveJourney(Journey journey) async {
     final url = Uri.parse('$baseUrl/journeys');
-    // You can make it POST for create, PUT for update depending on id.
+
 
     final response = await _client.post(
       url,
@@ -34,7 +34,7 @@ class JourneyRepository {
     }
   }
 
-  /// Fetch list of journeys (e.g., history)
+
   Future<List<Journey>> fetchJourneys({int page = 1, int limit = 20}) async {
     final url = Uri.parse('$baseUrl/journeys?page=$page&limit=$limit');
 
@@ -52,7 +52,7 @@ class JourneyRepository {
     }
   }
 
-  /// Optionally: fetch single journey by id
+
   Future<Journey> fetchJourneyById(String id) async {
     final url = Uri.parse('$baseUrl/journeys/$id');
 

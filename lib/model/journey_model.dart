@@ -43,7 +43,7 @@ class JourneyCheckEvent {
 
 
 class Journey {
-  final String? id; // can be null before saved to backend
+  final String? id;
   final ll.LatLng startLocation;
   final ll.LatLng? endLocation;
   final String startAddress;
