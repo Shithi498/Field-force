@@ -20,7 +20,7 @@
     </queries>
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="field_force_2"
+        android:label="Field Force"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <service

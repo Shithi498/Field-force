@@ -11,28 +11,37 @@ class OdooLoginPage extends StatefulWidget {
 }
 
 class _OdooLoginPageState extends State<OdooLoginPage> {
-  final _dbCtrl = TextEditingController(); // optional default
+  final _dbCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
 
 
   void initState() {
     super.initState();
-
-    // Wait for first frame so context is valid
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthProvider>().tryAutoLogin(context);
+    //
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   context.read<AuthProvider>().tryAutoLogin(context);
+    // });
+    Future.microtask(() async {
+      await context.read<AuthProvider>().tryAutoLogin(context);
     });
   }
 
 
   @override
   Widget build(BuildContext context) {
+    //final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = context.watch<AuthProvider>();
+    if (auth.user != null) {
+      return const DashboardScreen(); // ✅ no Navigator push, no flash
+    }
 
-
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-
-
+    // ✅ While checking session / logging in
+    if (auth.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFE9EDFF),
       body: Center(
@@ -56,14 +65,16 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text('Kendroo ERP',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+                    style: TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 24),
 
                 TextField(
                   controller: _dbCtrl,
                   decoration: InputDecoration(
                     labelText: 'Database',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -72,7 +83,8 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
                   controller: _emailCtrl,
                   decoration: InputDecoration(
                     labelText: 'Email / Username',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -82,7 +94,8 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6)),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -91,7 +104,8 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
                   width: double.infinity,
                   height: 48,
                   child: FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: Colors.blueAccent),
+                    style: FilledButton.styleFrom(
+                        backgroundColor: Colors.blueAccent),
                     onPressed: auth.isLoading
                         ? null
                         : () async {
@@ -108,12 +122,14 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Welcome ${auth.user!.name} (${auth.user!.companyName})',
+                                'Welcome ${auth.user!.name} (${auth.user!
+                                    .companyName})',
                               ),
                               duration: const Duration(seconds: 2),
                             ),
                           );
-                          await Future.delayed(const Duration(milliseconds: 800));
+                          await Future.delayed(
+                              const Duration(milliseconds: 800));
                           if (!mounted) return;
                           Navigator.pushReplacement(
                             context,

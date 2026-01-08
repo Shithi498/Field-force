@@ -12,7 +12,7 @@ import 'package:field_force_2/view/dashboard.dart';
 class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
+bool autologgeedin = false;
   String? sessionCookie;
   OdooUser? user;
 
@@ -55,9 +55,8 @@ class AuthProvider extends ChangeNotifier {
         if (result != null && result['uid'] != null) {
           user = OdooUser.fromJson(result);
           debugPrint("✅ AutoLogin successful → Dashboard");
-
-          Navigator.pushReplacement(
-            context,
+autologgeedin=true;
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (_) => const DashboardScreen()),
           );
         } else {
@@ -74,14 +73,11 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   Future<void> login(String db, String username, String password) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-    //  final url = Uri.parse('http://127.0.0.1:8069//web/session/authenticate');
       final url = Uri.parse('https://demo.kendroo.com/web/session/authenticate');
       final res = await http.post(
         url,
@@ -91,8 +87,6 @@ class AuthProvider extends ChangeNotifier {
           "params": {"db": db, "login": username, "password": password}
         }),
       );
-
-
 
       debugPrint("🔹 Login Status: ${res.statusCode}");
       debugPrint("🔹 Raw Response Body:\n${res.body}");
@@ -127,11 +121,10 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Clear local session
+
       sessionCookie = null;
       user = null;
 
-      // Clear saved credentials
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
 
