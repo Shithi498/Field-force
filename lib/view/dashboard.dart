@@ -490,20 +490,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ),
     _AppTile(
       title: 'Products',
-      image: Image(image: AssetImage('assets/icon/product.png')),
+      image: Image(image: AssetImage('assets/icon/products.png')),
     ),
     _AppTile(
       title: 'Field Force',
-      image: Image(image: AssetImage('assets/icon/field_force.jpg')),
+      image: Image(image: AssetImage('assets/icon/location.png')),
     ),
     _AppTile(
       title: 'Profile',
-      color: Colors.green,
-      icon: Icons.person,
+     // color: Colors.green,
+   //   icon: Icons.person,
+      image: Image(image: AssetImage('assets/icon/profile.png')),
     ),
     _AppTile(
       title: 'Attendance',
-      image: Image(image: AssetImage('assets/icon/attendances.png')),
+      image: Image(image: AssetImage('assets/icon/calendar.png')),
     ),
     _AppTile(
       title: 'Customers',
@@ -515,15 +516,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ),
 
     _AppTile(
-      title: 'Projects & Tasks',
-      color: Colors.green,
-      icon: Icons.task,
+      title: 'Projects',
+     // color: Colors.green,
+     // icon: Icons.task,
+      image: Image(image: AssetImage('assets/icon/projects.png')),
     ),
   ];
 
 
   Future<bool> _ensureLocationReady() async {
-    // 1) Service enabled?
     bool serviceEnabled = await _location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await _location.requestService();
@@ -539,7 +540,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     }
 
-    // 2) Permission granted?
+
     loc.PermissionStatus permission = await _location.hasPermission();
     if (permission == loc.PermissionStatus.denied) {
       permission = await _location.requestPermission();
@@ -560,7 +561,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _toggleCheckInOut() async {
     if (!_isCheckedIn) {
-      // CHECK IN
       final ok = await _ensureLocationReady();
       if (!ok) return;
 
@@ -579,7 +579,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       setState(() {
         _isCheckedIn = true;
 
-        // ⭐ add to history – this is what will be shown as pins on the map
         _checkInLocations.add(LatLng(lat, lng));
       });
       print("All check-ins so far:");
@@ -588,13 +587,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
     } else {
-      // CHECK OUT
+
       debugPrint('User checking out');
 
       if (!mounted) return;
       setState(() {
         _isCheckedIn = false;
-        // DO NOT clear _checkInLocations – we want to see previous pins
+
       });
     }
 
@@ -844,51 +843,7 @@ class _TopHeaderBar extends StatelessWidget {
   }
 }
 
-class _IconBadge extends StatelessWidget {
-  final IconData icon;
-  final int count;
-  final Color color;
-  const _IconBadge({
-    required this.icon,
-    required this.count,
-    required this.color,
-  });
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Icon(icon, color: color, size: 24),
-        if (count > 0)
-          Positioned(
-            right: -6,
-            top: -6,
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              constraints: const BoxConstraints(
-                minWidth: 16,
-                minHeight: 16,
-              ),
-              child: Text(
-                '$count',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
 
 class _DashboardIconTile extends StatelessWidget {
   final _AppTile app;
@@ -909,9 +864,8 @@ class _DashboardIconTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          // if your SDK complains about withOpacity, it’s fine to keep it,
-          // or change to withValues(alpha: 0.9) on newer Flutter
-          color: baseColor.withOpacity(0.9),
+       //   color: baseColor.withOpacity(0.9),
+          color: Color(0xFF28A745),
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(12),
@@ -939,139 +893,6 @@ class _DashboardIconTile extends StatelessWidget {
   }
 }
 
-class _CheckInOutTile extends StatelessWidget {
-  final bool isCheckedIn;
-  final VoidCallback onTap;
-
-  const _CheckInOutTile({
-    super.key,
-    required this.isCheckedIn,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final text = isCheckedIn ? 'Check Out' : 'Check In';
-    final color = isCheckedIn ? Colors.red : Colors.green;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 6,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: color.withOpacity(0.12),
-              child: Icon(
-                Icons.access_time_filled,
-                color: color,
-                size: 32,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
-
-class CheckInMapScreen extends StatelessWidget {
-  final List<ll.LatLng> checkInLocations;
-
-  const CheckInMapScreen({
-    Key? key,
-    required this.checkInLocations,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final hasLocations = checkInLocations.isNotEmpty;
-
-    // if we have check-ins, center on the last one, otherwise somewhere default
-    final ll.LatLng center = hasLocations
-        ? checkInLocations.last
-        : const ll.LatLng(23.8103, 90.4125); // e.g. Dhaka
-
-    final markers = checkInLocations.asMap().entries.map((entry) {
-      final index = entry.key;
-      final pos = entry.value;
-
-      final bool isLast = index == checkInLocations.length - 1;
-
-      return Marker(
-        point: pos,
-        width: 50,
-        height: 50,
-        alignment: Alignment.center,
-        child: Icon(
-          Icons.location_pin,
-          size: isLast ? 38 : 30,
-          color: isLast ? Colors.red : Colors.indigo,
-        ),
-      );
-    }).toList();
-    checkInLocations.asMap().forEach((i, pos) {
-      print("Check-in #${i + 1}: ${pos.latitude}, ${pos.longitude}");
-    });
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Check-in Locations'),
-        backgroundColor: Colors.indigo,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: FlutterMap(
-            options: MapOptions(
-              initialCenter: center,
-              initialZoom: hasLocations ? 15 : 5,
-              interactionOptions: const InteractionOptions(
-                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-              ),
-            ),
-            children: [
-              TileLayer(
-                urlTemplate:
-                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'],
-                userAgentPackageName: 'com.kendroo.gpslocator',
-              ),
-              MarkerLayer(
-                markers: markers,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 
 class _AppTile {
@@ -1096,7 +917,8 @@ class LinearGradientBackground extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFFF3F0FF), Color(0xFFEAE6FF)],
+         colors: [Color(0xFFF3F0FF), Color(0xFFEAE6FF)],
+
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
